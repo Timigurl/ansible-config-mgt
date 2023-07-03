@@ -6,6 +6,7 @@
   become_user: root
   tasks:
   - name: ensure wireshark is at the latest version
+    ansible.builtin.dnf:
     yum:
       name: wireshark
       state: latest
