@@ -10,7 +10,7 @@
         name: wireshark
         state: latest
 
-- name: update LB server and db servers
+- name: update LB server and db
   hosts: lb, db
   remote_user: ubuntu
   become: yes
@@ -24,3 +24,32 @@
       apt:
         name: wireshark
         state: latest
+
+- name: Create a test directory
+  hosts: webservers, nfs, lb,db
+  become_user: root
+  tasks:
+    - name: create directory
+      file:
+        path: $HOME/test_directory
+        state: directory
+        mode: '0755'
+
+- name: Create a test file
+  hosts: webservers, nfs, lb, db
+  become_user: root
+  tasks:
+    - name: Touch a file, using symbolic modes to set the permissions (equivalent to 0644)
+      file:
+        path: $HOME/test_directory/test_file.txt
+        state: touch
+        mode: u=rw,g=r,o=r
+
+- name: TImezone change
+  hosts: "webservers, nfs, lb, db"
+  become_user: root
+  become: true
+  tasks:
+    - name: Set timezone to Africa/Lagos
+      community.general.timezone:
+        name: Africa/Lagos
